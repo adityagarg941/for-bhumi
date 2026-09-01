@@ -35,12 +35,82 @@ body{background:#fff0f5;min-height:100vh;font-family:-apple-system,BlinkMacSyste
 .fb{font-size:15px;color:#555;line-height:2.1;font-style:italic;text-align:left}
 .fs{font-size:15px;color:#d4537e;font-weight:600;text-align:center;margin-top:14px}
 .fbot{font-size:18px;letter-spacing:5px;text-align:center;margin-top:14px}
+
+/* Music button */
+#musicbtn{
+  position:fixed;top:14px;right:14px;
+  background:#fff;border:2px solid #f4c0d1;
+  border-radius:50%;width:44px;height:44px;
+  font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(212,83,126,0.2);
+  z-index:999;transition:transform 0.2s
+}
+#musicbtn:active{transform:scale(0.9)}
+
+/* Start overlay — needed because mobile blocks autoplay */
+#overlay{
+  position:fixed;inset:0;background:rgba(255,240,245,0.97);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;gap:16px;padding:24px
+}
+#overlay h2{font-size:22px;color:#72243e;text-align:center;line-height:1.5}
+#overlay p{font-size:14px;color:#b07090;text-align:center}
+#startbtn{
+  background:#d4537e;color:#fff;border:none;border-radius:16px;
+  padding:14px 32px;font-size:17px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(212,83,126,0.35)
+}
+#startbtn:active{opacity:0.85}
 </style>
 </head>
 <body>
+
+<!-- Start overlay to unlock audio on mobile -->
+<div id="overlay">
+  <div style="font-size:60px">🌸</div>
+  <h2>Someone sent you something from the heart...</h2>
+  <p>Tap below to open it with music 🎵</p>
+  <button id="startbtn" onclick="startExp()">Open my message 💕</button>
+</div>
+
+<div id="musicbtn" onclick="toggleMusic()" title="Toggle music">🎵</div>
+<audio id="bg" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" type="audio/mpeg">
+</audio>
+
 <div id="app"></div>
+
 <script>
 var s=0;
+var playing=false;
+var audio=document.getElementById("bg");
+
+function startExp(){
+  document.getElementById("overlay").style.display="none";
+  audio.volume=0.35;
+  audio.play().then(function(){
+    playing=true;
+    document.getElementById("musicbtn").textContent="🎵";
+  }).catch(function(){
+    playing=false;
+    document.getElementById("musicbtn").textContent="🔇";
+  });
+  draw();
+}
+
+function toggleMusic(){
+  if(playing){
+    audio.pause();
+    playing=false;
+    document.getElementById("musicbtn").textContent="🔇";
+  } else {
+    audio.play();
+    playing=true;
+    document.getElementById("musicbtn").textContent="🎵";
+  }
+}
+
 var data=[
 {m:"happy",t:"Hii Bhumi\u2026 \uD83C\uDF38 I\u2019m a little bunny who hopped all the way here just to deliver the softest, most heartfelt message. Will you let me speak to you?",c:[{i:"\uD83C\uDF38",t:"Aww okay little bunny, go ahead\u2026"},{i:"\uD83C\uDF53",t:"I\u2019m listening, come here\u2026"}]},
 {m:"sad",t:"Yesterday\u2026 the person who loves you most in this world didn\u2019t act like it. He knows he hurt you. And it has been eating him alive ever since. He is truly, deeply sorry Bhumi.",c:[{i:"\uD83C\uDF27",t:"It really did hurt me\u2026"},{i:"\uD83D\uDC94",t:"I didn\u2019t expect that from him"}]},
@@ -146,7 +216,6 @@ a.innerHTML='<div class="prog">'+dots+'</div>'
 +'<div class="choices">'+btns+'</div>';
 document.getElementById("bunsvg").addEventListener("click",wagBun);
 }
-draw();
 </script>
 </body>
 </html>
